@@ -9,7 +9,7 @@ ser = 0
 
 
 # Function to Initialize the Serial Port
-def init_serial():
+def _init_serial():
     global ser  # Must be declared in Each Function
     ser = serial.Serial()
     ser.baudrate = 115200
@@ -17,31 +17,27 @@ def init_serial():
 
     # Specify the TimeOut in seconds, so that SerialPort
     # Doesn't hangs
-    ser.timeout = 10
+    ser.timeout = 1
     ser.open()  # Opens SerialPort
 
     # print port open or closed
     if ser.isOpen():
         print("Open: ' + ser.portstr")
 
-# Function Ends Here
-
-
-# Call the Serial Initilization Function, Main Program Starts from here
-init_serial()
-#ser.write("\r\n".encode("ascii"))
-while 1:
-    ser.reset_input_buffer()
-    temp = input(" > ") + "\r\n"
-    if "exit" in temp:
-        break
-    ser.write(temp.encode('ascii'))  # Writes to the SerialPort
+def console():
+    _init_serial()
     while 1:
-        line = ser.readline().decode('ascii')  # Read from Serial Port
-        if line == "> \r\n" or "Error" in line:
+        ser.reset_input_buffer()
+        temp = input(" > ") + "\r\n"
+        if "exit" in temp:
             break
-        print ('nRF: ' + line)# Print What is Read from Port
-
-exit()
-# Ctrl+C to Close Python Window
-
+        ser.write(temp.encode('ascii'))  # Writes to the SerialPort
+        line = ser.readline().decode('ascii')  # Read from Serial Port
+        while 1:
+            next_line = ser.readline().decode('ascii')  # Read from Serial Port
+            if (line == "> \r\n" and next_line == '> ') or next_line == line:
+                break
+            if not line == "> \r\n":
+                print('nRF: ' + line, end="")# Print What is Read from Port
+            line = next_line
+    exit()
