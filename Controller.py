@@ -41,12 +41,12 @@ def console(__ser: serial.Serial):
 
 def ping_all(__ser: serial.Serial):
     __ser.reset_input_buffer()
-    __ser.write("\r\n ping ff03::1".encode('ascii'))
+    __ser.write("\r\n ping ff03::1 \r\n".encode('ascii'))
     line = __ser.readline().decode('ascii')
     while 1:
         next_line = __ser.readline().decode('ascii')  # Read from Serial Port
         if (line == "> \r\n" and next_line == '> ') or next_line == line:
             break
         if not line == "> \r\n":
-            print('ping: ' + line, end="")  # Print What is Read from Port
-            line = next_line
+            print(line, end="")  # Print What is Read from Port
+        line = next_line
