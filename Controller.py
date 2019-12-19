@@ -1,9 +1,11 @@
 import csv
 from enum import Enum
+from lib2to3.pgen2.grammar import line
 
 import serial
 import csv
 import pandas as pd
+import datetime
 
 from StringHelper import *
 
@@ -40,7 +42,7 @@ class Controller:
                 line = next_line
         exit()
 
-    def ping_all(self, ):
+    def ping_all(self):
         self.ser.reset_input_buffer()
         self.ser.write("\r\n ping ff03::1 \r\n".encode('ascii'))
         lines = self.ser.readall().decode('ascii')
@@ -58,21 +60,20 @@ class Controller:
             line = next_line
         """
 
-    def ping(self, file_name="result.txt", ipaddr="ff03::1", size=8, count=1, interval=1):
+    def ping(self, ipaddr="ff03::1", size=8, count=1, interval=1, file_name="result"):
+        now = datetime.datetime.now()
+        """file_name = "{}_{}.csv".format(file_name, now.strftime("%x_%X").replace(":", "-").replace("/", "-"))"""
+        file_name = os.path.join("results", file_name)
         self.ser.reset_input_buffer()
         "https: // github.com / openthread / openthread / blob / master / src / cli / README.md  # ping-ipaddr-size-count-interval-hoplimit"
         self.ser.write("ping {} {} {} {} \r\n".format(ipaddr, size, count, interval).encode('ascii'))
-        line = self.ser.readline().decode('ascii')  # Read from Serial Port
-        with open(file_name, 'w') as file:
-            file.write("")
+        _line = self.ser.readline().decode('ascii')  # Read from Serial Port
         while 1:
-            next_line = self.ser.readline().decode('ascii')  # Read from Serial Port
-            if (line == "> \r\n" and next_line == '> ') or next_line == line:
+            _next_line = self.ser.readline().decode('ascii')  # Read from Serial Port
+            if (_line == "> \r\n" and _next_line == '> ') or _next_line == _line:
                 break
-            if not line == "> \r\n":
-                with open(file_name, 'a') as file:
-                    file.write(line)
-                print(line, end="")  # Print What is Read from Port
-            line = next_line
-
+            if not _line == "> \r\n":
+                print(_line, end="")  # Print What is Read from Port
+                append_line(file_name=file_name, line=_line)
+            _line = _next_line
 

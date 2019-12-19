@@ -1,10 +1,14 @@
 import Controller
+from StringHelper import *
+
+
+def multicast_package_benchmark():
+    for size in range(2, 17, 8):
+        controller.ping(size=size, interval=2, file_name="multicast-package-benchmark")
+
 
 controller = Controller.Controller("/dev/ttyACM0")
-
-controller.ping(ipaddr="ff03::1",size=30,count=1)
-"""Controller.append_row("test.csv", ipaddr="ff03::1", package_bytes=100, time=209)"""
-
+multicast_package_benchmark()
 
 """
 Plots als PDF nicht JPEG für Latex
