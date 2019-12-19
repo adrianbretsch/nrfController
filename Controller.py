@@ -42,30 +42,9 @@ class Controller:
                 line = next_line
         exit()
 
-    def ping_all(self):
+    def ping(self, ipaddr="ff03::1", size=8, count=1, interval=1, file_name="results/result.csv"):
         self.ser.reset_input_buffer()
-        self.ser.write("\r\n ping ff03::1 \r\n".encode('ascii'))
-        lines = self.ser.readall().decode('ascii')
-        for line in lines:
-            line = line.strip()
-            print(line)
-
-        """
-        while 1:
-            next_line = self.ser.readline().decode('ascii')  # Read from Serial Port
-            if (line == "> \r\n" and next_line == '> ') or next_line == line:
-                break
-            if not line == "> \r\n":
-                print(line, end="")  # Print What is Read from Port
-            line = next_line
-        """
-
-    def ping(self, ipaddr="ff03::1", size=8, count=1, interval=1, file_name="result"):
-        now = datetime.datetime.now()
-        """file_name = "{}_{}.csv".format(file_name, now.strftime("%x_%X").replace(":", "-").replace("/", "-"))"""
-        file_name = os.path.join("results", file_name)
-        self.ser.reset_input_buffer()
-        "https: // github.com / openthread / openthread / blob / master / src / cli / README.md  # ping-ipaddr-size-count-interval-hoplimit"
+        "https://github.com/openthread/openthread/blob/master/src/cli/README.md#ping-ipaddr-size-count-interval-hoplimit"
         self.ser.write("ping {} {} {} {} \r\n".format(ipaddr, size, count, interval).encode('ascii'))
         _line = self.ser.readline().decode('ascii')  # Read from Serial Port
         while 1:
@@ -76,4 +55,3 @@ class Controller:
                 print(_line, end="")  # Print What is Read from Port
                 append_line(file_name=file_name, line=_line)
             _line = _next_line
-
