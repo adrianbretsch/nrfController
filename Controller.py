@@ -1,16 +1,11 @@
 import csv
+from enum import Enum
 
 import serial
+import csv
 import pandas as pd
 
-
-# Global Variables
-
-def parse_to(row):
-    t = open('employee_file2.csv', 'a')
-    with t as file:
-        file.write(row)
-        print(file)
+from StringHelper import *
 
 
 class Controller:
@@ -75,5 +70,8 @@ class Controller:
                 break
             if not line == "> \r\n":
                 print(line, end="")  # Print What is Read from Port
-                parse_to()
+
+                append_row()
             line = next_line
+
+
