@@ -11,7 +11,8 @@ from StringHelper import *
 
 
 class Controller:
-    def __init__(self, port):
+    "TODO: Change the standard values of the __init__ method"
+    def __init__(self, port="/dev/ttyACM0"):
         self._port = port
         self.ser = serial.Serial()
         self.ser.baudrate = 115200
