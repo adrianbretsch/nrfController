@@ -11,10 +11,16 @@ def init(test_name):
     file_path = os.path.join("results", test_name, file_name)
     try:
         # Create target Directory
+        os.mkdir("results")
+        print("Directory results Created ")
+    except FileExistsError:
+        print("Directory results --> OK")
+    try:
+        # Create target Directory
         os.mkdir("results/" + test_name)
         print("Directory ", test_name, " Created ")
     except FileExistsError:
-        print("Directory ", test_name, " already exists")
+        print("Directory ", test_name, " --> OK")
     return file_path
 
 
@@ -25,16 +31,17 @@ def multicast_package_benchmark():
         controller.ping(size=size, interval=2, file_name=file_path)
 
 
-def multicast_Interval_Benchmark():
+def multicast_interval_benchmark():
     file_name = test_name = "multicast-interval-benchmark"
     init(test_name)
     "smallest 0.001"
     for interval in numpy.arange(0.01, 0.0009, -0.001):
-        file_name = controller.ping(size=392, interval=interval,file_name=file_name)
+        file_name = controller.ping(size=392, interval=interval, file_name=file_name)
 
 
 controller = Controller.Controller("/dev/ttyACM0")
 multicast_package_benchmark()
+
 "ping fdde:ad00:beef:0:d6b6:4b50:de96:9861 392 5 "
 """
 Plots als PDF nicht JPEG für Latex
