@@ -39,11 +39,15 @@ def _append_row(file_name, ipaddr="", package_bytes="", icmp_seq="", hlim="", ti
 def _parse_ping(line="") -> dict:
     line = line.replace("bytes from ", "").replace("> ", "").replace("\r\n", "")
     values = line.split(" ")
-    ping_values = dict({PingValues.BYTES: values[0],
-                        PingValues.IPADDR: values[1][:-1],
-                        PingValues.ICMP_SEQ: values[2].replace("icmp_seq=", ""),
-                        PingValues.HLIM: values[3].replace("hlim=", ""),
-                        PingValues.TIME: "0"})
-    if "time" in line:
-        ping_values[PingValues.TIME] = values[4].replace("time=", "").replace("ms", "")
+    ping_values = dict()
+    try:
+        ping_values = dict({PingValues.BYTES: values[0],
+                            PingValues.IPADDR: values[1][:-1],
+                            PingValues.ICMP_SEQ: values[2].replace("icmp_seq=", ""),
+                            PingValues.HLIM: values[3].replace("hlim=", ""),
+                            PingValues.TIME: "0"})
+        if "time" in line:
+            ping_values[PingValues.TIME] = values[4].replace("time=", "").replace("ms", "")
+    except Exception:
+        print("ERROR in Line: " + line)
     return ping_values

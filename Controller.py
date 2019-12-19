@@ -19,7 +19,7 @@ class Controller:
         self.ser.port = port  # If Using Linux
         # Specify the TimeOut in seconds, so that SerialPort
         # Doesn't hangs
-        self.ser.timeout = 1
+        self.ser.timeout = 10
         self.ser.open()  # Opens SerialPort
 
         # print port open or closed
@@ -44,6 +44,7 @@ class Controller:
         exit()
 
     def ping(self, ipaddr="ff03::1", size=8, count=1, interval=1, file_name="results/result.csv"):
+        "TODO: Error 5: Busy try to wait longer"
         self.ser.reset_input_buffer()
         "https://github.com/openthread/openthread/blob/master/src/cli/README.md#ping-ipaddr-size-count-interval-hoplimit"
         self.ser.write("ping {} {} {} {} \r\n".format(ipaddr, size, count, interval).encode('ascii'))
