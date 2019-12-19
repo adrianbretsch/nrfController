@@ -1,14 +1,10 @@
 import Controller
 
-controller = Controller
-"controller.console()"
-Controller.append_row("test.csv", ipaddr="ff03::1", package_bytes=100, time=209)
-"controller.ping('ff03::1', 100, 100, 1, 1)"
-"""
-pings = controller.ping_all()
+controller = Controller.Controller("/dev/ttyACM0")
 
-TODO: Do this every ... interval
-"""
+controller.ping(ipaddr="ff03::1",size=30,count=1)
+"""Controller.append_row("test.csv", ipaddr="ff03::1", package_bytes=100, time=209)"""
+
 
 """
 Plots als PDF nicht JPEG für Latex

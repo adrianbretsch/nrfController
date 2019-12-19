@@ -58,20 +58,21 @@ class Controller:
             line = next_line
         """
 
-    def ping(self, ipaddr, size, count, interval, hoplimit):
+    def ping(self, file_name="result.txt", ipaddr="ff03::1", size=8, count=1, interval=1):
         self.ser.reset_input_buffer()
-
-        self.ser.write("ping {} {} {} {} {}".format(ipaddr, size, count, interval, hoplimit).encode('ascii'))
+        "https: // github.com / openthread / openthread / blob / master / src / cli / README.md  # ping-ipaddr-size-count-interval-hoplimit"
+        self.ser.write("ping {} {} {} {} \r\n".format(ipaddr, size, count, interval).encode('ascii'))
         line = self.ser.readline().decode('ascii')  # Read from Serial Port
+        with open(file_name, 'w') as file:
+            file.write("")
         while 1:
-
             next_line = self.ser.readline().decode('ascii')  # Read from Serial Port
             if (line == "> \r\n" and next_line == '> ') or next_line == line:
                 break
             if not line == "> \r\n":
+                with open(file_name, 'a') as file:
+                    file.write(line)
                 print(line, end="")  # Print What is Read from Port
-
-                append_row()
             line = next_line
 
 

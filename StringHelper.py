@@ -3,6 +3,8 @@ import csv
 from enum import Enum
 import os.path
 
+import pingparsing
+
 
 class PingValues(Enum):
     BYTES = 'bytes'
@@ -12,8 +14,11 @@ class PingValues(Enum):
     TIME = 'time'
 
 
+
+
 def append_row(file_name="", ipaddr="", package_bytes="", icmp_seq="", hlim="", time=""):
     if not file_name == "":
+        """
         exists = os.path.isfile(file_name)
         with open(file_name, 'a') as file:
             fieldnames = []
@@ -26,7 +31,14 @@ def append_row(file_name="", ipaddr="", package_bytes="", icmp_seq="", hlim="", 
                              PingValues.ICMP_SEQ.value: icmp_seq, PingValues.HLIM.value: hlim,
                              PingValues.TIME.value: time})
             print(file)
+        """
 
 
-def parse_row(row: str) -> list:
-    return []
+def parse_row(ping_result) -> dict:
+    pparser = pingparsing.PingParsing()
+    pparser.parse(ping_result)
+    dictionary = dict({})
+    for value in PingValues:
+        dictionary[value] = ""
+
+    return dictionary
