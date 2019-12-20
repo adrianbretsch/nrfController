@@ -45,13 +45,13 @@ def multicast_interval_test():
 
 def multicast_stability_test():
     test_name = "multicast-stability-test"
-    for interval in numpy.arange(1, 0.0009, -0.005):
-        file_path = init(test_name=test_name, interval=interval)
-        controller.ping(size=12, count=20, interval=interval, file_name=file_path)
+    while 1:
+        file_path = init(test_name=test_name)
+        controller.ping(size=2, count=604800, file_name=file_path)
 
 
 controller = Controller.Controller()
-multicast_package_test()
+multicast_stability_test()
 
 "TODO: "
 
