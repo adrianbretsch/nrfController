@@ -28,19 +28,32 @@ def init(test_name, interval=0):
 
 
 def multicast_package_test():
+    "Tests the reliability of the network based on the package size of a multicast"
     test_name = "multicast-package-test"
     file_path = init(test_name)
-    for size in range(2, 17, 8):
-        controller.ping(size=size, interval=2, file_name=file_path)
+    for size in range(2, 992, 10):
+        controller.ping(size=size, file_name=file_path)
 
 
 def multicast_interval_test():
     test_name = "multicast-interval-test"
     "smallest 0.001"
-    for interval in numpy.arange(2, 0.0009, -0.001):
+    for interval in numpy.arange(0.7, 0.0009, -0.01):
         file_path = init(test_name=test_name, interval=interval)
         controller.ping(size=12, count=20, interval=interval, file_name=file_path)
 
+
+def multicast_stability_test():
+    test_name = "multicast-stability-test"
+    for interval in numpy.arange(1, 0.0009, -0.005):
+        file_path = init(test_name=test_name, interval=interval)
+        controller.ping(size=12, count=20, interval=interval, file_name=file_path)
+
+
+controller = Controller.Controller()
+multicast_package_test()
+
+"TODO: "
 
 """
 def multicast_device_scale():
@@ -53,8 +66,7 @@ def unicast_device_scale():
     
 def unicast_hop_test():
 """
-controller = Controller.Controller("/dev/ttyACM0")
-multicast_interval_test()
+
 
 "ping fdde:ad00:beef:0:d6b6:4b50:de96:9861 392 5 "
 """
