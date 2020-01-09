@@ -33,14 +33,14 @@ class Controller:
             if "exit" in temp:
                 break
             self.ser.write(temp.encode('ascii'))  # Writes to the SerialPort
-            line = self.ser.readline().decode('ascii')  # Read from Serial Port
+            _line = self.ser.readline().decode('ascii')  # Read from Serial Port
             while 1:
                 next_line = self.ser.readline().decode('ascii')  # Read from Serial Port
-                if (line == "> \r\n" and next_line == '> ') or next_line == line:
+                if (_line == "> \r\n" and next_line == '> ') or next_line == _line:
                     break
-                if not line == "> \r\n":
-                    print(line, end="")  # Print What is Read from Port
-                line = next_line
+                if not _line == "> \r\n":
+                    print(_line, end="")  # Print What is Read from Port
+                _line = next_line
         exit()
 
     def ping(self, ipaddr="ff03::1", size=8, count=1, interval=1, file_name="results/result.csv"):
@@ -56,4 +56,6 @@ class Controller:
             if not _line == "> \r\n":
                 print(_line, end="")  # Print What is Read from Port
                 append_line(file_name=file_name, line=_line)
+                if "Error" in _line:
+                    self.ser.write("\r\n")
             _line = _next_line
