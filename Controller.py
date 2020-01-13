@@ -4,6 +4,7 @@ from lib2to3.pgen2.grammar import line
 
 import serial
 import csv
+import StringHelper as sth
 import pandas as pd
 import datetime
 
@@ -32,10 +33,10 @@ class Controller:
             temp = input(" > ") + "\r\n"
             if "exit" in temp:
                 break
-            self.ser.write(temp.encode('ascii'))  # Writes to the SerialPort
-            _line = self.ser.readline().decode('ascii')  # Read from Serial Port
+            self.ser.write(temp.encode('UTF-8'))  # Writes to the SerialPort
+            _line = self.ser.readline().decode('UTF-8')  # Read from Serial Port
             while 1:
-                next_line = self.ser.readline().decode('ascii')  # Read from Serial Port
+                next_line = self.ser.readline().decode('UTF-8')  # Read from Serial Port
                 if (_line == "> \r\n" and next_line == '> ') or next_line == _line:
                     break
                 if not _line == "> \r\n":
@@ -43,19 +44,31 @@ class Controller:
                 _line = next_line
         exit()
 
-    def ping(self, ipaddr="ff03::1", size=8, count=1, interval=1, file_name="results/result.csv"):
-        "TODO: Error 5: Busy try to wait longer"
-        self.ser.reset_input_buffer()
+    def ping(self, ipaddr="ff03::1", size=18, count=1, interval=1, file_name="results/result.csv"):
+        "TODO: Error 5: Busy try to wait longer DOKUMENTIEREN"
         "https://github.com/openthread/openthread/blob/master/src/cli/README.md#ping-ipaddr-size-count-interval-hoplimit"
-        self.ser.write("ping {} {} {} {} \r\n".format(ipaddr, size, count, interval).encode('ascii'))
-        _line = self.ser.readline().decode('ascii')  # Read from Serial Port
+        self.ser.write("ping {} {} {} {} \r\n".format(ipaddr, size, count, interval).encode('UTF-8'))
+        _line = self.ser.readline().decode('UTF-8')  # Read from Serial Port
         while 1:
-            _next_line = self.ser.readline().decode('ascii')  # Read from Serial Port
+            _next_line = self.ser.readline().decode('UTF-8')  # Read from Serial Port
+            if "Error 5: Busy" in _line:
+                _next_line = self.ser.readline().decode('UTF-8')
+                self.ser.write("ping {} {} {} {} \r\n".format(ipaddr, size, count, interval).encode('UTF-8'))
             if (_line == "> \r\n" and _next_line == '> ') or _next_line == _line:
                 break
             if not _line == "> \r\n":
                 print(_line, end="")  # Print What is Read from Port
-                append_line(file_name=file_name, line=_line)
-                if "Error" in _line:
-                    self.ser.write("\r\n")
+                if file_name != "":
+                    append_line(file_name=file_name, line=_line)
             _line = _next_line
+
+
+    def get_any_ip(self):
+        try:
+            os.remove("results/result.csv")
+        except Exception:
+            print("File doesnt exist... Starting Test")
+        self.ping()
+        results = pd.read_csv("results/result.csv",
+                              usecols=[sth.PingValues.IPADDR.value])
+        return results.values[0][0]

@@ -50,15 +50,15 @@ def _parse_ping(line="") -> dict:
                             PingValues.TIME: "0",
                             PingValues.ERROR: ""})
         if "time" in line:
-            dict[PingValues.TIME] = values[4].replace("time=", "").replace("ms", "")
-        if "Error" in line:
-            print("ERROR in Line: " + line)
-            ping_values = dict({PingValues.BYTES: "",
-                                PingValues.IPADDR: "",
-                                PingValues.ICMP_SEQ: "",
-                                PingValues.HLIM: "",
-                                PingValues.TIME: "",
-                                PingValues.ERROR: line})
+            ping_values[PingValues.TIME] = values[4].replace("time=", "").replace("ms", "")
+
     except Exception:
-        print("ERROR in Line: " + line)
+        print("[ERROR]: " + line)
+    if "Error" in line:
+        ping_values = dict({PingValues.BYTES: "",
+                            PingValues.IPADDR: "",
+                            PingValues.ICMP_SEQ: "",
+                            PingValues.HLIM: "",
+                            PingValues.TIME: "",
+                            PingValues.ERROR: line})
     return ping_values
