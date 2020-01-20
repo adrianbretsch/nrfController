@@ -13,6 +13,7 @@ from StringHelper import *
 
 class Controller:
     "TODO: Change the standard values of the __init__ method"
+
     def __init__(self, port="/dev/ttyACM0"):
         self._port = port
         self.ser = serial.Serial()
@@ -44,13 +45,18 @@ class Controller:
                 _line = next_line
         exit()
 
-    def ping(self, ipaddr="ff03::1", size=18, count=1, interval=1, file_name="results/result.csv"):
+    def ping(self, ipaddr="ff03::1", size=12, count=1, interval=1, file_name="results/result.csv"):
         "TODO: Error 5: Busy try to wait longer DOKUMENTIEREN"
         "https://github.com/openthread/openthread/blob/master/src/cli/README.md#ping-ipaddr-size-count-interval-hoplimit"
+        interval = round(interval, 5)
         self.ser.write("ping {} {} {} {} \r\n".format(ipaddr, size, count, interval).encode('UTF-8'))
-        _line = self.ser.readline().decode('UTF-8')  # Read from Serial Port
+        try:
+            _line = self.ser.readline().decode('UTF-8') # Read from Serial Port
+        except Exception as e:
+            print(e)
+            return
         while 1:
-            _next_line = self.ser.readline().decode('UTF-8')  # Read from Serial Port
+            _next_line = self.ser.readline().decode('UTF-8') # Read from Serial Port
             if "Error 5: Busy" in _line:
                 _next_line = self.ser.readline().decode('UTF-8')
                 self.ser.write("ping {} {} {} {} \r\n".format(ipaddr, size, count, interval).encode('UTF-8'))
@@ -59,9 +65,8 @@ class Controller:
             if not _line == "> \r\n":
                 print(_line, end="")  # Print What is Read from Port
                 if file_name != "":
-                    append_line(file_name=file_name, line=_line)
+                    append_line(file_name=file_name, line=_line, interval=interval)
             _line = _next_line
-
 
     def get_any_ip(self):
         try:

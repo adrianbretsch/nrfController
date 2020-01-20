@@ -14,8 +14,9 @@ def plot_multicast_package_test():
 
     results = pd.read_csv("results/multicast-package-test/multicast-package-test_01-09-20_17-28-09.csv",
                           usecols=[sth.PingValues.BYTES.value, sth.PingValues.TIME.value])
-    chart = sns.jointplot(x='bytes', y='time',ratio=10, data=results, marker='x')
+    chart = sns.jointplot(x='bytes', y='time', ratio=10, data=results, marker='x')
     plt.show()
+
 
 def plot_unicast_package_test():
     """time/bytes chart. Showing the packages lost and time needed to receive the ping from a Unicast
@@ -31,11 +32,26 @@ def plot_unicast_package_test():
     plt.title("Unicast Package Test")
     plt.show()
 
+def plot_unicast_interval_test():
+    """
+    """
+    results_path = "results/unicast_interval_test/unicast_interval_test_01-16-20_11-05-42.csv"
+    results = pd.read_csv(results_path,
+                          usecols=[sth.PingValues.INTERVAL.value, sth.PingValues.TIME.value])
+    chart = sns.boxplot(x='interval', y='time', data=results, color="#009EE0")
+    plt.ylabel('Time in ms')
+    plt.xlabel('Interval in ms')
+    plt.ylim(0, None)
+    plt.xlim(0, None)
+    sparsify_axis_labels(chart, 5)
+    plt.title("Unicast Interval Test")
+    plt.show()
 
+"""@author mbatchkarov https://github.com/mwaskom/seaborn/issues/636"""
 def sparsify_axis_labels(ax, n=2):
     for idx, label in enumerate(ax.xaxis.get_ticklabels()):
-        if (idx+1) % n != 0:
+        if (idx + 1) % n != 0:
             label.set_visible(False)
 
 
-plot_unicast_package_test()
+plot_unicast_interval_test()

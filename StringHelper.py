@@ -10,21 +10,23 @@ class PingValues(Enum):
     ICMP_SEQ = 'icmp_seq'
     HLIM = 'hlim'
     TIME = 'time'
+    INTERVAL = 'interval'
     ERROR = 'error'
 
 
-def append_line(file_name="", line=""):
+def append_line(file_name="", line="", interval=""):
     if not file_name == "" and not "ping" in line:
-        ping_dic = _parse_ping(line)
+        ping_dic = _parse_ping(line, interval)
         _append_row(file_name, ipaddr=ping_dic.get(PingValues.IPADDR),
                     package_bytes=ping_dic.get(PingValues.BYTES),
                     icmp_seq=ping_dic.get(PingValues.ICMP_SEQ),
                     hlim=ping_dic.get(PingValues.HLIM),
                     time=ping_dic.get(PingValues.TIME),
+                    interval=ping_dic.get(PingValues.INTERVAL),
                     error=ping_dic.get(PingValues.ERROR))
 
 
-def _append_row(file_name, ipaddr="", package_bytes="", icmp_seq="", hlim="", time="", error=""):
+def _append_row(file_name, ipaddr="", package_bytes="", icmp_seq="", hlim="", time="", interval="", error=""):
     exists = os.path.isfile(file_name)
     with open(file_name, 'a') as file:
         fieldnames = []
@@ -35,10 +37,10 @@ def _append_row(file_name, ipaddr="", package_bytes="", icmp_seq="", hlim="", ti
             writer.writeheader()
         writer.writerow({PingValues.BYTES.value: package_bytes, PingValues.IPADDR.value: ipaddr,
                          PingValues.ICMP_SEQ.value: icmp_seq, PingValues.HLIM.value: hlim,
-                         PingValues.TIME.value: time, PingValues.ERROR.value: error})
+                         PingValues.TIME.value: time, PingValues.INTERVAL.value: interval, PingValues.ERROR.value: error})
 
 
-def _parse_ping(line="") -> dict:
+def _parse_ping(line="", interval="") -> dict:
     line = line.replace("bytes from ", "").replace("> ", "").replace("\r\n", "")
     values = line.split(" ")
     ping_values = dict()
@@ -48,6 +50,7 @@ def _parse_ping(line="") -> dict:
                             PingValues.ICMP_SEQ: values[2].replace("icmp_seq=", ""),
                             PingValues.HLIM: values[3].replace("hlim=", ""),
                             PingValues.TIME: "0",
+                            PingValues.INTERVAL: interval,
                             PingValues.ERROR: ""})
         if "time" in line:
             ping_values[PingValues.TIME] = values[4].replace("time=", "").replace("ms", "")
@@ -60,5 +63,6 @@ def _parse_ping(line="") -> dict:
                             PingValues.ICMP_SEQ: "",
                             PingValues.HLIM: "",
                             PingValues.TIME: "",
+                            PingValues.INTERVAL: interval,
                             PingValues.ERROR: line})
     return ping_values
