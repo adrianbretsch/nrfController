@@ -36,6 +36,13 @@ def init(test_name, size=0, interval=0, count=0, hops=-1):
     return file_path
 
 
+def udp_test():
+    test_name = "udp-test"
+    file_path = init(test_name)
+    for interval in numpy.arange(0, 1000, 1):
+        controller.udp("fdde:ad00:beef:0:77c9:c16c:8a3f:35c1", interval, file_name=file_path)
+
+
 def multicast_package_test():
     "Tests the reliability of the network based on the package size of a multicast"
     test_name = "multicast-package-test"
@@ -106,7 +113,7 @@ def unicast_hop_test():
 
 
 controller = Controller.Controller()
-unicast_hop_test()
+udp_test()
 
 "TODO: "
 """

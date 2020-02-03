@@ -26,6 +26,8 @@ class Controller:
 
         # print port open or closed
         if self.ser.isOpen():
+            self.ser.write("udp open \r\n".encode('UTF-8'))
+            self.ser.write(" udp bind :: {}\r\n".format(port).encode('UTF-8'))
             print("Open: ' + ser.portstr")
 
     def console(self):
@@ -44,6 +46,25 @@ class Controller:
                     print(_line, end="")  # Print What is Read from Port
                 _line = next_line
         exit()
+
+    def udp(self, ipaddr="ff03::1", payload="0", port="1212", file_name="results/result.csv"):
+        self.ser.write("udp send {} {} {}\r\n".format(ipaddr,port, payload).encode('UTF-8'))
+        try:
+            _line = self.ser.readline().decode('UTF-8') # Read from Serial Port
+        except Exception as e:
+            print(e)
+            return
+        while 1:
+            _next_line = self.ser.readline().decode('UTF-8') # Read from Serial Port
+            if (_line == "> \r\n" and _next_line == '> ') or _next_line == _line:
+                break
+            if not _line == "> \r\n":
+                print(_line, end="")  # Print What is Read from Port
+                if file_name != "" and "bytes from " in _line:
+                    append_line(file_name=file_name, line=_line)
+                    return
+            _line = _next_line
+
 
     def ping(self, ipaddr="ff03::1", size=12, count=1, interval=1, file_name="results/result.csv"):
         "TODO: Error 5: Busy try to wait longer DOKUMENTIEREN"
