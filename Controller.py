@@ -6,7 +6,9 @@ import serial
 import csv
 import StringHelper as sth
 import pandas as pd
-import datetime
+import time
+import sched
+
 
 from StringHelper import *
 
@@ -21,13 +23,13 @@ class Controller:
         self.ser.port = port  # If Using Linux
         # Specify the TimeOut in seconds, so that SerialPort
         # Doesn't hangs
-        self.ser.timeout = 10
+        self.ser.timeout = 1
         self.ser.open()  # Opens SerialPort
 
         # print port open or closed
         if self.ser.isOpen():
             self.ser.write("udp open \r\n".encode('UTF-8'))
-            self.ser.write(" udp bind :: {}\r\n".format(port).encode('UTF-8'))
+            self.ser.write(" udp bind :: {}\r\n".format(1213).encode('UTF-8'))
             print("Open: ' + ser.portstr")
 
     def console(self):
@@ -47,23 +49,18 @@ class Controller:
                 _line = next_line
         exit()
 
-    def udp(self, ipaddr="ff03::1", payload="0", port="1212", file_name="results/result.csv"):
+    def udp(self, ipaddr="ff03::1",interval=1, payload="0", port="1212", file_name="results/result.csv") -> dict:
+        "udp_header =  X bytes"
+        start_time = int(round(time.time() * 1000))
         self.ser.write("udp send {} {} {}\r\n".format(ipaddr,port, payload).encode('UTF-8'))
-        try:
-            _line = self.ser.readline().decode('UTF-8') # Read from Serial Port
-        except Exception as e:
-            print(e)
-            return
+        "TODO: set a Timer to do this shit every Interval... or so"
         while 1:
-            _next_line = self.ser.readline().decode('UTF-8') # Read from Serial Port
-            if (_line == "> \r\n" and _next_line == '> ') or _next_line == _line:
-                break
-            if not _line == "> \r\n":
-                print(_line, end="")  # Print What is Read from Port
-                if file_name != "" and "bytes from " in _line:
-                    append_line(file_name=file_name, line=_line)
-                    return
-            _line = _next_line
+            _line = self.ser.readline().decode('UTF-8') # Read from Serial Port
+            print(_line, end="")  # Print What is Read from Port
+            if file_name != "" and "bytes from " in _line:
+                end_time = int(round(time.time() * 1000))
+                delta_t = end_time - start_time
+                return append_line(file_name=file_name, time=delta_t, line=_line)
 
 
     def ping(self, ipaddr="ff03::1", size=12, count=1, interval=1, file_name="results/result.csv"):
@@ -98,3 +95,4 @@ class Controller:
         results = pd.read_csv("results/result.csv",
                               usecols=[sth.PingValues.IPADDR.value])
         return results.values[0][0]
+

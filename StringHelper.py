@@ -19,10 +19,11 @@ class UdpValues(Enum):
     IPADDR = 'ipaddr'
     PORT = 'port'
     MESSAGE = 'message'
+    TIME = 'time'
     ERROR = 'error'
 
 
-def append_line(file_name="", line="", interval=""):
+def append_line(file_name="", line="", interval="", time="") -> dict:
     if not file_name == "" and "icmp" in line and not "ping" in line:
         ping_dic = _parse_ping(line, interval)
         _append_row(file_name, ipaddr=ping_dic.get(PingValues.IPADDR),
@@ -32,9 +33,17 @@ def append_line(file_name="", line="", interval=""):
                     time=ping_dic.get(PingValues.TIME),
                     interval=ping_dic.get(PingValues.INTERVAL),
                     error=ping_dic.get(PingValues.ERROR))
+        return ping_dic
     elif not file_name == "" and "bytes from" in line:
         udp_dic = _parse_udp(line)
-        _
+        _append_row(file_name,
+                    package_bytes=udp_dic.get(UdpValues.BYTES),
+                    ipaddr=udp_dic.get(UdpValues.IPADDR),
+                    port=udp_dic.get(UdpValues.PORT),
+                    message=udp_dic.get(UdpValues.MESSAGE),
+                    time=time,
+                    error=udp_dic.get(UdpValues.ERROR))
+        return udp_dic
 
 
 def _parse_udp(line) -> dict:
@@ -77,12 +86,12 @@ def _append_row(file_name, ipaddr="", package_bytes="", icmp_seq="", hlim="", ti
                              PingValues.ERROR.value: error})
         elif ipaddr != "":
             for value in UdpValues:
-                fieldnames.append((value.value))
+                fieldnames.append(value.value)
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             if not exists:
                 writer.writeheader()
             writer.writerow({UdpValues.BYTES.value: package_bytes, UdpValues.IPADDR.value: ipaddr,
-                             UdpValues.PORT.value: port, UdpValues.MESSAGE.value: message, UdpValues.ERROR.ERROR.value:error
+                             UdpValues.PORT.value: port, UdpValues.MESSAGE.value: message, UdpValues.TIME.value: time, UdpValues.ERROR.ERROR.value:error
                              })
 
 

@@ -39,8 +39,10 @@ def init(test_name, size=0, interval=0, count=0, hops=-1):
 def udp_test():
     test_name = "udp-test"
     file_path = init(test_name)
-    for interval in numpy.arange(0, 1000, 1):
-        controller.udp("fdde:ad00:beef:0:77c9:c16c:8a3f:35c1", interval, file_name=file_path)
+    ip_addr = "ff03::1"
+    for counter in numpy.arange(0, 1000, 1):
+        controller.udp(ipaddr=ip_addr, payload=counter, file_name=file_path)
+
 
 
 def multicast_package_test():
