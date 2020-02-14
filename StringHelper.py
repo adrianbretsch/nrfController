@@ -24,6 +24,7 @@ class UdpValues(Enum):
 
 
 def append_line(file_name="", line="", interval="", time="") -> dict:
+    line = line.rstrip()
     if not file_name == "" and "icmp" in line and not "ping" in line:
         ping_dic = _parse_ping(line, interval)
         _append_row(file_name, ipaddr=ping_dic.get(PingValues.IPADDR),
@@ -54,7 +55,7 @@ def _parse_udp(line) -> dict:
         udp_values = dict({UdpValues.BYTES: values[0],
                            UdpValues.IPADDR: values[1],
                            UdpValues.PORT: values[2],
-                           UdpValues.MESSAGE: values[3],
+                           UdpValues.MESSAGE: values[3].split("_")[0],
                            UdpValues.ERROR: ""
                            })
     except Exception:

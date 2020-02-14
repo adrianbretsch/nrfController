@@ -44,6 +44,22 @@ def udp_test():
         controller.udp(ipaddr=ip_addr, payload=counter, file_name=file_path)
 
 
+def udp_payload_test():
+    test_name = "udp_payload_test"
+    file_path = init(test_name, hops=3)
+    ip_addr = "ff03::1"
+    while "ff03::1" in ip_addr:
+        udp_dic = controller.udp(ipaddr=ip_addr, file_name=file_path)
+        if udp_dic is not None:
+            ip_addr = udp_dic.get(sth.UdpValues.IPADDR)
+
+    for load in numpy.arange(50, 500, 50):
+        for udp_id in numpy.arange(1, 501, 1):
+            formated_id = "{0:0=3d}".format(udp_id)
+            message = "*"*(load-4)
+            payload = "{}_{}".format(formated_id, message)
+            controller.udp(ipaddr=ip_addr, payload=payload, file_name=file_path)
+
 
 def multicast_package_test():
     "Tests the reliability of the network based on the package size of a multicast"
@@ -115,7 +131,7 @@ def unicast_hop_test():
 
 
 controller = Controller.Controller()
-udp_test()
+udp_payload_test()
 
 "TODO: "
 """

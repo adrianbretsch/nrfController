@@ -3,6 +3,34 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import StringHelper as sth
 
+def plot_udp_unicast_payload_test():
+    """
+        time/bytes chart. Showing the packages lost and time needed to receive the udp from a Unicast
+    """
+    results = pd.read_csv("results/udp_payload_test/udp_payload_test_h-3_02-09-20_02-54-51.csv",
+                          usecols=[sth.PingValues.BYTES.value, sth.PingValues.TIME.value])
+    chart = sns.boxplot(x='bytes', y='time', data=results,)
+    plt.ylabel('Response time in ms')
+    plt.xlabel('Payload in bytes')
+    plt.ylim(0, None)
+    plt.xlim(0, None)
+    plt.title("Unicast Package Test; Hops = 1")
+    plt.show()
+
+def plot_udp_unicast_package_lost():
+    results = pd.read_csv("results/udp_payload_test/udp_payload_test_h-3_02-09-20_02-54-51.csv",
+                          usecols=[sth.PingValues.BYTES.value, sth.PingValues.TIME.value])
+
+    results_bytes = results.groupby(sth.UdpValues.BYTES.value)
+
+    size=results_bytes.size()
+    plt.plot(size, "gx")
+    plt.ylabel('Packages received')
+    plt.xlabel('Payload in bytes')
+    plt.ylim(0, None)
+    plt.xlim(0, None)
+    plt.title("Unicast UDP Packages received; Hops=1; Packages sent=500")
+    plt.show()
 
 def plot_multicast_package_test():
     """time/bytes chart. Showing the packages lost and time needed to receive the ping from a Multicast
@@ -54,4 +82,4 @@ def sparsify_axis_labels(ax, n=2):
             label.set_visible(False)
 
 
-plot_unicast_interval_test()
+plot_udp_unicast_package_lost()

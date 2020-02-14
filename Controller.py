@@ -9,14 +9,13 @@ import pandas as pd
 import time
 import sched
 
-
 from StringHelper import *
 
 
 class Controller:
     "TODO: Change the standard values of the __init__ method"
 
-    def __init__(self, port="/dev/ttyACM0"):
+    def __init__(self, port="COM10"):
         self._port = port
         self.ser = serial.Serial()
         self.ser.baudrate = 115200
@@ -49,19 +48,20 @@ class Controller:
                 _line = next_line
         exit()
 
-    def udp(self, ipaddr="ff03::1",interval=1, payload="0", port="1212", file_name="results/result.csv") -> dict:
+    def udp(self, ipaddr="ff03::1", interval=1, payload="0", port="1212", file_name="results/result.csv") -> dict:
         "udp_header =  X bytes"
         start_time = int(round(time.time() * 1000))
-        self.ser.write("udp send {} {} {}\r\n".format(ipaddr,port, payload).encode('UTF-8'))
+        self.ser.write("udp send {} {} {}\r\n".format(ipaddr, port, payload).encode('UTF-8'))
         "TODO: set a Timer to do this shit every Interval... or so"
-        while 1:
-            _line = self.ser.readline().decode('UTF-8') # Read from Serial Port
-            print(_line, end="")  # Print What is Read from Port
+        test_duration = 0
+        while test_duration < 5000:
+            _line = self.ser.readline().decode('UTF-8')  # Read from Serial Port
             if file_name != "" and "bytes from " in _line:
+                print(_line, end="")  # Print What is Read from Port
                 end_time = int(round(time.time() * 1000))
                 delta_t = end_time - start_time
                 return append_line(file_name=file_name, time=delta_t, line=_line)
-
+            test_duration = int(round(time.time() * 1000)) - start_time
 
     def ping(self, ipaddr="ff03::1", size=12, count=1, interval=1, file_name="results/result.csv"):
         "TODO: Error 5: Busy try to wait longer DOKUMENTIEREN"
@@ -69,12 +69,12 @@ class Controller:
         interval = round(interval, 5)
         self.ser.write("ping {} {} {} {} \r\n".format(ipaddr, size, count, interval).encode('UTF-8'))
         try:
-            _line = self.ser.readline().decode('UTF-8') # Read from Serial Port
+            _line = self.ser.readline().decode('UTF-8')  # Read from Serial Port
         except Exception as e:
             print(e)
             return
         while 1:
-            _next_line = self.ser.readline().decode('UTF-8') # Read from Serial Port
+            _next_line = self.ser.readline().decode('UTF-8')  # Read from Serial Port
             if "Error 5: Busy" in _line:
                 _next_line = self.ser.readline().decode('UTF-8')
                 self.ser.write("ping {} {} {} {} \r\n".format(ipaddr, size, count, interval).encode('UTF-8'))
@@ -95,4 +95,3 @@ class Controller:
         results = pd.read_csv("results/result.csv",
                               usecols=[sth.PingValues.IPADDR.value])
         return results.values[0][0]
-
